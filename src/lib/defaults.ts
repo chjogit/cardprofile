@@ -11,9 +11,9 @@ export function createBlock(type: BlockType): Block {
     case "text":
       return { id, type, text: "여기에 내용을 적어보세요." };
     case "link":
-      return { id, type, label: "새 링크", url: "https://" };
+      return { id, type, label: "새 링크", url: "" };
     case "socials":
-      return { id, type, items: [{ platform: "instagram", url: "https://instagram.com/" }] };
+      return { id, type, items: [{ platform: "instagram", value: "" }] };
     case "image":
       return { id, type, src: "", alt: "" };
     case "divider":

@@ -2,7 +2,8 @@
 
 import { fileToDataUrl } from "@/lib/image";
 import type { Block, SocialPlatform } from "@/lib/types";
-import { SOCIAL_NAMES } from "../SocialIcon";
+import { PLATFORMS, PLATFORM_ORDER, normalizeUrl, socialUrl } from "@/lib/social";
+import { SocialIcon } from "../SocialIcon";
 
 type Props = { block: Block; onChange: (b: Block) => void };
 
@@ -12,6 +13,15 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       {label}
       {children}
     </label>
+  );
+}
+
+function ResolvedUrl({ url }: { url: string }) {
+  if (!url) return null;
+  return (
+    <p className="truncate text-xs text-ink-soft">
+      누르면 <span className="text-cobalt">{url.replace(/^mailto:/, "")}</span> 로 이동해요
+    </p>
   );
 }
 
@@ -80,67 +90,86 @@ export function BlockEditor({ block, onChange }: Props) {
     case "link":
       return (
         <div className="flex flex-col gap-3">
-          <Field label="버튼 글자">
-            <input className="field" value={block.label} onChange={(e) => onChange({ ...block, label: e.target.value })} />
-          </Field>
-          <Field label="연결할 주소">
+          <Field label="버튼 이름">
             <input
               className="field"
-              type="url"
+              placeholder="예: 포트폴리오 보기"
+              value={block.label}
+              onChange={(e) => onChange({ ...block, label: e.target.value })}
+            />
+          </Field>
+          <Field label="이동할 주소">
+            <input
+              className="field"
+              inputMode="url"
+              placeholder="예: naver.com 또는 https://..."
               value={block.url}
               onChange={(e) => onChange({ ...block, url: e.target.value })}
             />
           </Field>
+          <ResolvedUrl url={normalizeUrl(block.url)} />
         </div>
       );
     case "socials":
       return (
-        <div className="flex flex-col gap-2">
-          {block.items.map((it, i) => (
-            <div key={i} className="flex gap-2">
-              <select
-                className="field w-32 shrink-0"
-                aria-label="서비스"
-                value={it.platform}
-                onChange={(e) => {
-                  const items = [...block.items];
-                  items[i] = { ...it, platform: e.target.value as SocialPlatform };
-                  onChange({ ...block, items });
-                }}
-              >
-                {Object.entries(SOCIAL_NAMES).map(([k, v]) => (
-                  <option key={k} value={k}>
-                    {v}
-                  </option>
-                ))}
-              </select>
-              <input
-                className="field"
-                aria-label="주소"
-                placeholder={it.platform === "email" ? "me@example.com" : "https://"}
-                value={it.url}
-                onChange={(e) => {
-                  const items = [...block.items];
-                  items[i] = { ...it, url: e.target.value };
-                  onChange({ ...block, items });
-                }}
-              />
-              <button
-                type="button"
-                className="btn btn-ghost shrink-0 px-3"
-                aria-label="이 아이콘 빼기"
-                onClick={() => onChange({ ...block, items: block.items.filter((_, j) => j !== i) })}
-              >
-                ✕
-              </button>
-            </div>
-          ))}
+        <div className="flex flex-col gap-3">
+          {block.items.map((it, i) => {
+            const set = (patch: Partial<typeof it>) => {
+              const items = [...block.items];
+              items[i] = { ...it, ...patch };
+              onChange({ ...block, items });
+            };
+            return (
+              <div key={i} className="flex flex-col gap-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-paper text-ink">
+                    <SocialIcon platform={it.platform} size={18} />
+                  </span>
+                  <select
+                    className="field w-[7.5rem] shrink-0"
+                    aria-label="SNS 종류"
+                    value={it.platform}
+                    onChange={(e) => set({ platform: e.target.value as SocialPlatform })}
+                  >
+                    {PLATFORM_ORDER.map((k) => (
+                      <option key={k} value={k}>
+                        {PLATFORMS[k].name}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    className="field"
+                    aria-label={`${PLATFORMS[it.platform].name} ${PLATFORMS[it.platform].placeholder}`}
+                    placeholder={PLATFORMS[it.platform].placeholder}
+                    value={it.value}
+                    onChange={(e) => set({ value: e.target.value })}
+                  />
+                  <button
+                    type="button"
+                    className="btn btn-ghost shrink-0 px-3"
+                    aria-label="이 아이콘 빼기"
+                    onClick={() => onChange({ ...block, items: block.items.filter((_, j) => j !== i) })}
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="pl-11">
+                  <ResolvedUrl url={socialUrl(it.platform, it.value)} />
+                </div>
+              </div>
+            );
+          })}
+          <p className="text-xs text-ink-soft">아이디만 적어도 되고, 전체 주소를 붙여넣어도 돼요.</p>
           <button
             type="button"
             className="btn btn-ghost self-start"
-            onClick={() => onChange({ ...block, items: [...block.items, { platform: "website", url: "https://" }] })}
+            onClick={() => {
+              const used = new Set(block.items.map((x) => x.platform));
+              const next = PLATFORM_ORDER.find((k) => !used.has(k)) ?? "website";
+              onChange({ ...block, items: [...block.items, { platform: next, value: "" }] });
+            }}
           >
-            아이콘 추가
+            SNS 추가
           </button>
         </div>
       );

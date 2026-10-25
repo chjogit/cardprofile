@@ -1,9 +1,13 @@
 export type SocialPlatform =
   | "instagram"
   | "youtube"
-  | "x"
-  | "github"
+  | "kakao"
+  | "naverblog"
+  | "threads"
   | "tiktok"
+  | "x"
+  | "facebook"
+  | "github"
   | "linkedin"
   | "email"
   | "website";
@@ -12,7 +16,7 @@ export type Block =
   | { id: string; type: "profile"; name: string; bio: string; avatar: string }
   | { id: string; type: "text"; text: string }
   | { id: string; type: "link"; label: string; url: string }
-  | { id: string; type: "socials"; items: { platform: SocialPlatform; url: string }[] }
+  | { id: string; type: "socials"; items: { platform: SocialPlatform; value: string }[] }
   | { id: string; type: "image"; src: string; alt: string }
   | { id: string; type: "divider" };
 

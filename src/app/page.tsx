@@ -26,9 +26,9 @@ const SAMPLES: Card[] = [
         id: "b3",
         type: "socials",
         items: [
-          { platform: "instagram", url: "https://instagram.com" },
-          { platform: "youtube", url: "https://youtube.com" },
-          { platform: "tiktok", url: "https://tiktok.com" },
+          { platform: "instagram", value: "example" },
+          { platform: "youtube", value: "example" },
+          { platform: "kakao", value: "example" },
         ],
       },
     ],
@@ -45,8 +45,8 @@ const SAMPLES: Card[] = [
         id: "c3",
         type: "socials",
         items: [
-          { platform: "github", url: "https://github.com" },
-          { platform: "linkedin", url: "https://linkedin.com" },
+          { platform: "github", value: "example" },
+          { platform: "naverblog", value: "example" },
         ],
       },
     ],

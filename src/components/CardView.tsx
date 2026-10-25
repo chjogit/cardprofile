@@ -1,14 +1,8 @@
 import type { CSSProperties } from "react";
+import { normalizeUrl, socialUrl } from "@/lib/social";
 import { getFont, getTheme } from "@/lib/themes";
 import type { Block, Card } from "@/lib/types";
 import { SOCIAL_NAMES, SocialIcon } from "./SocialIcon";
-
-function safeHref(url: string, platform?: string) {
-  const v = url.trim();
-  if (platform === "email" && !v.startsWith("mailto:")) return `mailto:${v}`;
-  if (/^(https?:|mailto:)/i.test(v)) return v;
-  return `https://${v}`;
-}
 
 function BlockView({ block }: { block: Block }) {
   switch (block.type) {
@@ -49,7 +43,7 @@ function BlockView({ block }: { block: Block }) {
     case "link":
       return (
         <a
-          href={safeHref(block.url)}
+          href={normalizeUrl(block.url) || undefined}
           target="_blank"
           rel="noopener noreferrer"
           className="card-link block w-full rounded-full px-5 py-3.5 text-center text-[15px] font-semibold transition-transform active:scale-[0.98]"
@@ -61,13 +55,14 @@ function BlockView({ block }: { block: Block }) {
     case "socials":
       return (
         <div className="flex flex-wrap justify-center gap-2">
-          {block.items.map((it, i) => (
+          {block.items.filter((it) => it.value.trim()).map((it, i) => (
             <a
               key={i}
-              href={safeHref(it.url, it.platform)}
+              href={socialUrl(it.platform, it.value)}
               target="_blank"
               rel="noopener noreferrer"
               aria-label={SOCIAL_NAMES[it.platform]}
+              title={SOCIAL_NAMES[it.platform]}
               className="grid h-11 w-11 place-items-center rounded-full transition-opacity hover:opacity-75"
               style={{ border: "1px solid var(--card-border)", color: "var(--text)" }}
             >
