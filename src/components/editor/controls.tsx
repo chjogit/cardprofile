@@ -61,14 +61,21 @@ export function Segmented<T extends string>({
   options,
   onChange,
   label,
+  fill,
 }: {
   value: T;
   options: { value: T; label: React.ReactNode; title?: string }[];
   onChange: (v: T) => void;
   label: string;
+  // true면 가로폭을 가득 채우고 버튼을 같은 너비로 나눈다
+  fill?: boolean;
 }) {
   return (
-    <div role="group" aria-label={label} className="flex rounded-lg border border-line bg-surface p-0.5">
+    <div
+      role="group"
+      aria-label={label}
+      className={`rounded-lg border border-line bg-surface p-0.5 ${fill ? "grid grid-flow-col auto-cols-fr" : "flex"}`}
+    >
       {options.map((o) => (
         <button
           key={o.value}
@@ -76,7 +83,7 @@ export function Segmented<T extends string>({
           title={o.title}
           aria-pressed={value === o.value}
           onClick={() => onChange(o.value)}
-          className="min-w-8 rounded-md px-2 py-1 text-xs text-ink-soft aria-pressed:bg-ink aria-pressed:text-white"
+          className="min-w-8 rounded-md px-2 py-1 text-center text-xs text-ink-soft aria-pressed:bg-ink aria-pressed:text-white"
         >
           {o.label}
         </button>

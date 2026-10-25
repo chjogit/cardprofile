@@ -59,7 +59,7 @@ export default function Home() {
     <main className="flex flex-1 flex-col overflow-x-hidden">
       <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-5 sm:px-6">
         <Link href="/" className="text-lg font-bold tracking-tight">
-          카드프로필
+          CardProfile
         </Link>
         <nav className="flex items-center gap-2">
           <Link href="/login" className="btn btn-ghost">

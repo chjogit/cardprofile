@@ -6,7 +6,7 @@ import "./globals.css";
 const PLEX_CSS = "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap";
 
 export const metadata: Metadata = {
-  title: "카드프로필",
+  title: "CardProfile",
   description: "링크 하나로 나를 소개하는 프로필 카드를 만들어보세요.",
 };
 

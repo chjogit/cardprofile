@@ -61,7 +61,7 @@ export function LoginForm() {
   return (
     <div className="w-full max-w-sm">
       <Link href="/" className="text-lg font-bold">
-        카드프로필
+        CardProfile
       </Link>
       <h1 className="mt-8 text-3xl font-bold">{isSignup ? "가입하고 카드 만들기" : "다시 오셨네요"}</h1>
       <p className="mt-2 text-ink-soft">

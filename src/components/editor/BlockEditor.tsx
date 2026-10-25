@@ -434,6 +434,7 @@ export function BlockEditor(props: Props) {
     <div className="flex flex-col gap-3">
       {props.block.type !== "divider" && (
         <Segmented
+          fill
           label="편집할 내용"
           value={view}
           onChange={setView}

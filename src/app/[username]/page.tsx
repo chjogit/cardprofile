@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const card = isSupabaseConfigured ? await loadCard(username) : null;
   const profile = card?.blocks.find((b): b is Extract<Block, { type: "profile" }> => b.type === "profile");
   return {
-    title: profile ? `${profile.name} · 카드프로필` : `${username} · 카드프로필`,
+    title: profile ? `${profile.name} · CardProfile` : `${username} · CardProfile`,
     description: profile?.bio,
   };
 }
