@@ -48,7 +48,7 @@ function useUpload(onChange: (v: string) => void, maxSize?: number) {
 }
 
 function AvatarInput({ value, name, onChange }: { value: string; name: string; onChange: (v: string) => void }) {
-  const { busy, error, pick } = useUpload(onChange, 400);
+  const { busy, error, pick } = useUpload(onChange, 600);
   return (
     <div>
       <p className="mb-1.5 text-xs font-medium text-ink-soft">프로필 사진</p>

@@ -173,7 +173,7 @@ export async function saveProfile(p: Omit<Profile, "updatedAt">): Promise<Profil
  * 이미지를 올리고 카드에 넣을 주소를 돌려준다.
  * Supabase에서는 Storage의 images 버킷에, 체험 모드에서는 카드 데이터 안에 저장한다.
  */
-export async function uploadImage(file: File, maxSize = 640): Promise<string> {
+export async function uploadImage(file: File, maxSize = 1280): Promise<string> {
   const sb = getSupabase();
   if (!sb) return fileToDataUrl(file, maxSize);
   const user = await getUser();

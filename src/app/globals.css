@@ -8,6 +8,7 @@
   --cobalt: #2f45ff;
   --cobalt-soft: #e3e7ff;
   --surface: #ffffff;
+  --font-plex: "IBM Plex Sans KR";
 }
 
 @theme inline {
@@ -90,7 +91,8 @@ body {
   }
 }
 .fan-card {
-  animation: fan-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  /* backwards: 끝난 뒤엔 애니메이션 레이어를 풀어서 글자가 흐려지지 않게 한다 */
+  animation: fan-in 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
 }
 @media (prefers-reduced-motion: reduce) {
   .fan-card {
