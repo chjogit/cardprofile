@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 카드프로필
 
-## Getting Started
+Carrd처럼 링크 하나로 나를 소개하는 반응형 프로필 카드를 만드는 웹 앱이에요.
 
-First, run the development server:
+- 블록(프로필, 텍스트, 링크 버튼, 소셜 아이콘, 이미지, 구분선)을 추가하고 드래그로 순서 바꾸기
+- 테마 4종(종이, 노을, 밤, 민트)과 버튼 색, 배경 색, 글꼴 고르기
+- 휴대폰/데스크톱 미리보기
+- 이메일 가입·로그인(Supabase 연결 시 Google 로그인도 가능), 저장, 공개/비공개
+- `사이트주소/아이디` 공개 페이지
+
+## 실행하기
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+http://localhost:3000 을 열어보세요.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+`.env.local`이 없으면 **체험 모드**로 실행돼요. 계정과 카드가 그 브라우저의 localStorage에만 저장되므로, 화면과 기능을 확인하는 용도예요.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 실제 서비스로 쓰기 (Supabase)
 
-## Learn More
+1. [supabase.com](https://supabase.com)에서 새 프로젝트를 만들어요.
+2. SQL Editor에서 `supabase/schema.sql` 내용을 실행해요.
+3. Project Settings > API의 URL과 anon key를 `.env.local`에 넣어요. (`.env.example` 참고)
+4. Google 로그인을 쓰려면 Authentication > Providers에서 Google을 켜요.
+5. 이메일 인증을 끄고 바로 로그인하게 하려면 Authentication > Providers > Email에서 "Confirm email"을 꺼요.
 
-To learn more about Next.js, take a look at the following resources:
+## 배포 (Vercel)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Vercel에서 이 저장소를 Import해요.
+2. Environment Variables에 위 두 값을 넣고 Deploy해요.
+3. Supabase Authentication > URL Configuration의 Site URL을 배포 주소로 바꿔요.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 구조
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/app/page.tsx` 첫 화면
+- `src/app/login` 가입·로그인
+- `src/app/editor`, `src/components/editor` 카드 편집기
+- `src/app/[username]` 공개 카드 페이지
+- `src/components/CardView.tsx` 카드 렌더링 (미리보기와 공개 페이지가 함께 사용)
+- `src/lib/store.ts` 저장소 (Supabase 또는 체험 모드)
+- `src/lib/themes.ts` 테마와 글꼴
