@@ -1,4 +1,4 @@
-// 올린 이미지를 작게 줄인다. 큰 사진도 빠르게 저장·로딩되도록 한다.
+// 올린 이미지를 줄인다. 큰 사진도 빠르게 저장·로딩되면서, 고해상도 화면에서도 흐리지 않을 만큼은 남긴다.
 function resize(file: File, maxSize: number): Promise<HTMLCanvasElement> {
   return new Promise((resolve, reject) => {
     if (!file.type.startsWith("image/")) {
@@ -24,11 +24,11 @@ function resize(file: File, maxSize: number): Promise<HTMLCanvasElement> {
   });
 }
 
-export async function fileToDataUrl(file: File, maxSize = 640): Promise<string> {
+export async function fileToDataUrl(file: File, maxSize = 1280): Promise<string> {
   return (await resize(file, maxSize)).toDataURL("image/jpeg", 0.85);
 }
 
-export async function fileToJpegBlob(file: File, maxSize = 640): Promise<Blob> {
+export async function fileToJpegBlob(file: File, maxSize = 1280): Promise<Blob> {
   const canvas = await resize(file, maxSize);
   return new Promise((resolve, reject) =>
     canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("이미지를 변환할 수 없어요."))), "image/jpeg", 0.85),
