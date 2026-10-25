@@ -183,7 +183,7 @@ export function EditorApp() {
           <div className="px-4 pb-10 pt-2">
             <DemoNotice className="mb-4" />
             {tab === "blocks" ? (
-              <BlockList blocks={card.blocks} onChange={(blocks) => update({ ...card, blocks })} />
+              <BlockList blocks={card.blocks} design={card.design} onChange={(blocks) => update({ ...card, blocks })} />
             ) : (
               <DesignPanel card={card} onChange={update} />
             )}

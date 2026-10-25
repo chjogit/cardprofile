@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSyncExternalStore } from "react";
 import { CardView } from "@/components/CardView";
 import { getDemoPublicProfile } from "@/lib/store";
+import { normalizeCard } from "@/lib/themes";
 import type { Card } from "@/lib/types";
 
 export function DemoPublicCard({ username }: { username: string }) {
@@ -16,7 +17,8 @@ export function DemoPublicCard({ username }: { username: string }) {
   );
 
   if (raw === undefined) return <div className="min-h-dvh" />;
-  const card = JSON.parse(raw) as Card | null;
+  const parsed = JSON.parse(raw) as Card | null;
+  const card = parsed && normalizeCard(parsed);
   if (card === null) return <NotFoundCard />;
   return <CardView card={card} className="min-h-dvh" />;
 }

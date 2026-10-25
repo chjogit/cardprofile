@@ -4,6 +4,7 @@
 // 없으면 이 브라우저의 localStorage에 저장하는 데모 모드로 동작한다.
 import { fileToDataUrl, fileToJpegBlob } from "./image";
 import { getSupabase } from "./supabase";
+import { normalizeCard } from "./themes";
 import type { Card, Profile } from "./types";
 
 export type User = { id: string; email: string };
@@ -39,7 +40,7 @@ type ProfileRow = {
 const fromRow = (r: ProfileRow): Profile => ({
   id: r.id,
   username: r.username,
-  card: r.card,
+  card: normalizeCard(r.card),
   published: r.published,
   updatedAt: r.updated_at,
 });
@@ -123,7 +124,8 @@ export async function getMyProfile(userId: string): Promise<Profile | null> {
     if (error) throw new Error(error.message);
     return data ? fromRow(data as ProfileRow) : null;
   }
-  return readDemo().profiles.find((p) => p.id === userId) ?? null;
+  const p = readDemo().profiles.find((x) => x.id === userId);
+  return p ? { ...p, card: normalizeCard(p.card) } : null;
 }
 
 export async function isUsernameTaken(username: string, userId: string) {

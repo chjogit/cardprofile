@@ -1,4 +1,5 @@
 import { nanoid } from "nanoid";
+import { getPreset } from "./themes";
 import type { Block, BlockType, Card } from "./types";
 
 export const newId = () => nanoid(10);
@@ -23,10 +24,8 @@ export function createBlock(type: BlockType): Block {
 
 export function defaultCard(name = "이름"): Card {
   return {
-    themeId: "paper",
-    accent: "",
-    background: "",
-    font: "sans",
+    preset: "paper",
+    design: { ...getPreset("paper").design },
     blocks: [
       { ...(createBlock("profile") as Extract<Block, { type: "profile" }>), name },
       createBlock("link"),

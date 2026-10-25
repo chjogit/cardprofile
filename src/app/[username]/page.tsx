@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { CardView } from "@/components/CardView";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabase";
+import { normalizeCard } from "@/lib/themes";
 import type { Block, Card } from "@/lib/types";
 import { DemoPublicCard } from "./DemoPublicCard";
 
@@ -17,7 +18,7 @@ async function loadCard(username: string): Promise<Card | null> {
     .eq("username", username.toLowerCase())
     .eq("published", true)
     .maybeSingle();
-  return (data?.card as Card) ?? null;
+  return data?.card ? normalizeCard(data.card) : null;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

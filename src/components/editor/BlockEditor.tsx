@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { uploadImage } from "@/lib/store";
-import type { Block, SocialPlatform } from "@/lib/types";
+import type { Block, Design, SocialPlatform } from "@/lib/types";
+import { ColorInput, Row, Segmented, Slider, TextStyleEditor, Toggle } from "./controls";
 import { PLATFORMS, PLATFORM_ORDER, normalizeUrl, socialUrl } from "@/lib/social";
 import { SocialIcon } from "../SocialIcon";
 
-type Props = { block: Block; onChange: (b: Block) => void };
+type Props = { block: Block; design: Design; onChange: (b: Block) => void };
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -110,7 +111,7 @@ function ImageInput({ value, onChange, label }: { value: string; onChange: (v: s
   );
 }
 
-export function BlockEditor({ block, onChange }: Props) {
+function BlockContent({ block, onChange }: Omit<Props, "design">) {
   switch (block.type) {
     case "profile":
       return (
@@ -236,4 +237,217 @@ export function BlockEditor({ block, onChange }: Props) {
     case "divider":
       return <p className="text-xs text-ink-soft">블록 사이에 얇은 선을 넣어요.</p>;
   }
+}
+
+const SHAPES = [
+  { value: "circle" as const, label: "원" },
+  { value: "rounded" as const, label: "둥근 네모" },
+  { value: "square" as const, label: "네모" },
+];
+
+function BlockDesign({ block, design, onChange }: Props) {
+  switch (block.type) {
+    case "profile":
+      return (
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2.5 rounded-xl bg-paper p-3">
+            <span className="text-xs font-semibold">사진</span>
+            <Row label="모양">
+              <Segmented
+                label="사진 모양"
+                value={block.avatarShape ?? "circle"}
+                options={SHAPES}
+                onChange={(avatarShape) => onChange({ ...block, avatarShape })}
+              />
+            </Row>
+            <Row label="크기">
+              <Slider
+                label="사진 크기"
+                min={56}
+                max={160}
+                value={block.avatarSize ?? 96}
+                unit="px"
+                onChange={(avatarSize) => onChange({ ...block, avatarSize })}
+              />
+            </Row>
+          </div>
+          <TextStyleEditor
+            label="이름 글씨"
+            value={block.nameStyle}
+            defaultSize={24}
+            defaultColor={design.text}
+            onChange={(nameStyle) => onChange({ ...block, nameStyle })}
+          />
+          <TextStyleEditor
+            label="소개 글씨"
+            value={block.bioStyle}
+            defaultSize={15}
+            defaultColor={design.muted}
+            onChange={(bioStyle) => onChange({ ...block, bioStyle })}
+          />
+        </div>
+      );
+    case "text":
+      return (
+        <TextStyleEditor
+          value={block.style}
+          defaultSize={15}
+          defaultColor={design.text}
+          onChange={(style) => onChange({ ...block, style })}
+        />
+      );
+    case "link": {
+      const btn = block.button ?? {};
+      const variant = btn.variant ?? design.buttonVariant;
+      return (
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2.5 rounded-xl bg-paper p-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold">버튼 모양</span>
+              {block.button && (
+                <button
+                  type="button"
+                  className="text-xs text-cobalt hover:underline"
+                  onClick={() => onChange({ ...block, button: undefined })}
+                >
+                  처음대로
+                </button>
+              )}
+            </div>
+            <Row label="모서리">
+              <Segmented
+                label="버튼 모서리"
+                value={btn.shape ?? design.buttonShape}
+                options={[
+                  { value: "pill", label: "알약" },
+                  { value: "rounded", label: "둥근 네모" },
+                  { value: "square", label: "네모" },
+                ]}
+                onChange={(shape) => onChange({ ...block, button: { ...btn, shape } })}
+              />
+            </Row>
+            <Row label="스타일">
+              <Segmented
+                label="버튼 스타일"
+                value={variant}
+                options={[
+                  { value: "fill", label: "채우기" },
+                  { value: "outline", label: "테두리" },
+                  { value: "soft", label: "연하게" },
+                ]}
+                onChange={(v) => onChange({ ...block, button: { ...btn, variant: v } })}
+              />
+            </Row>
+            <Row label="버튼 색">
+              <ColorInput
+                label="버튼 색"
+                value={btn.bg}
+                placeholder={design.accent}
+                onChange={(bg) => onChange({ ...block, button: { ...btn, bg } })}
+              />
+            </Row>
+          </div>
+          <TextStyleEditor
+            label="버튼 글씨"
+            value={block.style}
+            defaultSize={15}
+            defaultColor={variant === "fill" ? design.onAccent : (btn.bg ?? design.accent)}
+            onChange={(style) => onChange({ ...block, style })}
+          />
+        </div>
+      );
+    }
+    case "socials": {
+      const ic = block.icon ?? {};
+      return (
+        <div className="flex flex-col gap-2.5 rounded-xl bg-paper p-3">
+          <Row label="모양">
+            <Segmented
+              label="아이콘 모양"
+              value={ic.shape ?? "circle"}
+              options={SHAPES}
+              onChange={(shape) => onChange({ ...block, icon: { ...ic, shape } })}
+            />
+          </Row>
+          <Row label="크기">
+            <Slider
+              label="아이콘 크기"
+              min={32}
+              max={64}
+              value={ic.size ?? 44}
+              unit="px"
+              onChange={(size) => onChange({ ...block, icon: { ...ic, size } })}
+            />
+          </Row>
+          <Row label="색">
+            <ColorInput
+              label="아이콘 색"
+              value={ic.color}
+              placeholder={design.text}
+              onChange={(color) => onChange({ ...block, icon: { ...ic, color } })}
+            />
+          </Row>
+          <Row label="배경 채우기">
+            <Toggle
+              label="아이콘 배경 채우기"
+              checked={Boolean(ic.filled)}
+              onChange={(filled) => onChange({ ...block, icon: { ...ic, filled } })}
+            />
+          </Row>
+        </div>
+      );
+    }
+    case "image":
+      return (
+        <div className="rounded-xl bg-paper p-3">
+          <Row label="모서리 둥글기">
+            <Slider
+              label="이미지 모서리"
+              min={0}
+              max={40}
+              value={block.radius ?? 12}
+              unit="px"
+              onChange={(radius) => onChange({ ...block, radius })}
+            />
+          </Row>
+        </div>
+      );
+    case "divider":
+      return (
+        <div className="rounded-xl bg-paper p-3">
+          <Row label="선 색">
+            <ColorInput
+              label="선 색"
+              value={block.color}
+              placeholder={design.muted}
+              onChange={(color) => onChange({ ...block, color })}
+            />
+          </Row>
+        </div>
+      );
+  }
+}
+
+export function BlockEditor(props: Props) {
+  const [view, setView] = useState<"content" | "design">("content");
+  return (
+    <div className="flex flex-col gap-3">
+      {props.block.type !== "divider" && (
+        <Segmented
+          label="편집할 내용"
+          value={view}
+          onChange={setView}
+          options={[
+            { value: "content", label: "내용" },
+            { value: "design", label: "꾸미기" },
+          ]}
+        />
+      )}
+      {view === "content" && props.block.type !== "divider" ? (
+        <BlockContent block={props.block} onChange={props.onChange} />
+      ) : (
+        <BlockDesign {...props} />
+      )}
+    </div>
+  );
 }

@@ -1,13 +1,12 @@
 import Link from "next/link";
 import { CardView } from "@/components/CardView";
+import { getPreset } from "@/lib/themes";
 import type { Card } from "@/lib/types";
 
 const SAMPLES: Card[] = [
   {
-    themeId: "mint",
-    accent: "",
-    background: "",
-    font: "round",
+    preset: "mint",
+    design: { ...getPreset("mint").design, font: "cafe24-surround" },
     blocks: [
       { id: "a1", type: "profile", name: "김하늘", bio: "식물 키우는 일러스트레이터", avatar: "" },
       { id: "a2", type: "link", label: "작업 포트폴리오", url: "https://example.com" },
@@ -15,10 +14,8 @@ const SAMPLES: Card[] = [
     ],
   },
   {
-    themeId: "sunset",
-    accent: "",
-    background: "",
-    font: "sans",
+    preset: "sunset",
+    design: getPreset("sunset").design,
     blocks: [
       { id: "b1", type: "profile", name: "박준", bio: "주말마다 공연하는 밴드 보컬", avatar: "" },
       { id: "b2", type: "link", label: "새 싱글 듣기", url: "https://example.com" },
@@ -34,10 +31,8 @@ const SAMPLES: Card[] = [
     ],
   },
   {
-    themeId: "night",
-    accent: "",
-    background: "",
-    font: "sans",
+    preset: "night",
+    design: getPreset("night").design,
     blocks: [
       { id: "c1", type: "profile", name: "이서연", bio: "프론트엔드 개발자", avatar: "" },
       { id: "c2", type: "link", label: "기술 블로그", url: "https://example.com" },

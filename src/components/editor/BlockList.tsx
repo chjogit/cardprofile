@@ -19,7 +19,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
 import { BLOCK_LABELS, createBlock } from "@/lib/defaults";
-import type { Block, BlockType } from "@/lib/types";
+import type { Block, BlockType, Design } from "@/lib/types";
 import { BlockEditor } from "./BlockEditor";
 
 function summary(b: Block) {
@@ -41,12 +41,14 @@ function summary(b: Block) {
 
 function SortableItem({
   block,
+  design,
   open,
   onToggle,
   onChange,
   onRemove,
 }: {
   block: Block;
+  design: Design;
   open: boolean;
   onToggle: () => void;
   onChange: (b: Block) => void;
@@ -90,7 +92,7 @@ function SortableItem({
       </div>
       {open && (
         <div className="border-t border-line px-4 pb-4 pt-3">
-          <BlockEditor block={block} onChange={onChange} />
+          <BlockEditor block={block} design={design} onChange={onChange} />
         </div>
       )}
     </li>
@@ -99,7 +101,15 @@ function SortableItem({
 
 const ADDABLE: BlockType[] = ["link", "text", "socials", "image", "divider", "profile"];
 
-export function BlockList({ blocks, onChange }: { blocks: Block[]; onChange: (b: Block[]) => void }) {
+export function BlockList({
+  blocks,
+  design,
+  onChange,
+}: {
+  blocks: Block[];
+  design: Design;
+  onChange: (b: Block[]) => void;
+}) {
   const [openId, setOpenId] = useState<string | null>(blocks[0]?.id ?? null);
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } }),
@@ -129,6 +139,7 @@ export function BlockList({ blocks, onChange }: { blocks: Block[]; onChange: (b:
               <SortableItem
                 key={b.id}
                 block={b}
+                design={design}
                 open={openId === b.id}
                 onToggle={() => setOpenId(openId === b.id ? null : b.id)}
                 onChange={(nb) => onChange(blocks.map((x) => (x.id === nb.id ? nb : x)))}
