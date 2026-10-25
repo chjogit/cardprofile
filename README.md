@@ -21,19 +21,10 @@ http://localhost:3000 을 열어보세요.
 
 `.env.local`이 없으면 **체험 모드**로 실행돼요. 계정과 카드가 그 브라우저의 localStorage에만 저장되므로, 화면과 기능을 확인하는 용도예요.
 
-## 실제 서비스로 쓰기 (Supabase)
+## 실제 서비스로 배포하기 (무료)
 
-1. [supabase.com](https://supabase.com)에서 새 프로젝트를 만들어요.
-2. SQL Editor에서 `supabase/schema.sql` 내용을 실행해요.
-3. Project Settings > API의 URL과 anon key를 `.env.local`에 넣어요. (`.env.example` 참고)
-4. Google 로그인을 쓰려면 Authentication > Providers에서 Google을 켜요.
-5. 이메일 인증을 끄고 바로 로그인하게 하려면 Authentication > Providers > Email에서 "Confirm email"을 꺼요.
-
-## 배포 (Vercel)
-
-1. Vercel에서 이 저장소를 Import해요.
-2. Environment Variables에 위 두 값을 넣고 Deploy해요.
-3. Supabase Authentication > URL Configuration의 Site URL을 배포 주소로 바꿔요.
+Supabase(데이터베이스)와 Vercel(호스팅) 무료 플랜으로 배포해요.
+순서대로 따라 하면 되는 안내는 [docs/DEPLOY.md](docs/DEPLOY.md)에 있어요.
 
 ## 구조
 
