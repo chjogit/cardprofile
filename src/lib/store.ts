@@ -2,6 +2,7 @@
 
 // 데이터 저장소. Supabase 환경변수가 있으면 Supabase를 쓰고,
 // 없으면 이 브라우저의 localStorage에 저장하는 데모 모드로 동작한다.
+import { fileToDataUrl, fileToJpegBlob } from "./image";
 import { getSupabase } from "./supabase";
 import type { Card, Profile } from "./types";
 
@@ -164,6 +165,22 @@ export async function saveProfile(p: Omit<Profile, "updatedAt">): Promise<Profil
   db.profiles = [...db.profiles.filter((x) => x.id !== p.id), saved];
   writeDemo(db);
   return saved;
+}
+
+/**
+ * 이미지를 올리고 카드에 넣을 주소를 돌려준다.
+ * Supabase에서는 Storage의 images 버킷에, 체험 모드에서는 카드 데이터 안에 저장한다.
+ */
+export async function uploadImage(file: File, maxSize = 640): Promise<string> {
+  const sb = getSupabase();
+  if (!sb) return fileToDataUrl(file, maxSize);
+  const user = await getUser();
+  if (!user) throw new Error("로그인이 필요해요.");
+  const blob = await fileToJpegBlob(file, maxSize);
+  const path = `${user.id}/${crypto.randomUUID()}.jpg`;
+  const { error } = await sb.storage.from("images").upload(path, blob, { contentType: "image/jpeg" });
+  if (error) throw new Error(`이미지를 올리지 못했어요: ${error.message}`);
+  return sb.storage.from("images").getPublicUrl(path).data.publicUrl;
 }
 
 // 데모 모드에서 공개 페이지가 쓰는 조회. Supabase 모드에서는 서버에서 조회한다.

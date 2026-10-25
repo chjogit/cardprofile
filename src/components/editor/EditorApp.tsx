@@ -187,6 +187,15 @@ export function EditorApp() {
             ) : (
               <DesignPanel card={card} onChange={update} />
             )}
+            <button
+              className="btn btn-ghost mt-8 w-full sm:hidden"
+              onClick={async () => {
+                await signOut();
+                router.push("/");
+              }}
+            >
+              로그아웃
+            </button>
           </div>
         </aside>
 

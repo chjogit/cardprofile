@@ -1,6 +1,7 @@
 "use client";
 
-import { fileToDataUrl } from "@/lib/image";
+import { useState } from "react";
+import { uploadImage } from "@/lib/store";
 import type { Block, SocialPlatform } from "@/lib/types";
 import { PLATFORMS, PLATFORM_ORDER, normalizeUrl, socialUrl } from "@/lib/social";
 import { SocialIcon } from "../SocialIcon";
@@ -25,7 +26,65 @@ function ResolvedUrl({ url }: { url: string }) {
   );
 }
 
+function useUpload(onChange: (v: string) => void, maxSize?: number) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function pick(e: React.ChangeEvent<HTMLInputElement>) {
+    const f = e.target.files?.[0];
+    e.target.value = "";
+    if (!f) return;
+    setBusy(true);
+    setError("");
+    try {
+      onChange(await uploadImage(f, maxSize));
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return { busy, error, pick };
+}
+
+function AvatarInput({ value, name, onChange }: { value: string; name: string; onChange: (v: string) => void }) {
+  const { busy, error, pick } = useUpload(onChange, 400);
+  return (
+    <div>
+      <p className="mb-1.5 text-xs font-medium text-ink-soft">프로필 사진</p>
+      <div className="flex items-center gap-3">
+        <label className="group relative h-16 w-16 shrink-0 cursor-pointer overflow-hidden rounded-full bg-paper">
+          {value ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={value} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <span className="grid h-full w-full place-items-center text-xl font-semibold text-ink-soft">
+              {name.trim().charAt(0) || "?"}
+            </span>
+          )}
+          <span className="absolute inset-0 grid place-items-center bg-ink/50 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
+            바꾸기
+          </span>
+          <input type="file" accept="image/*" className="sr-only" onChange={pick} aria-label="프로필 사진 올리기" />
+        </label>
+        <div className="flex flex-wrap gap-2">
+          <label className="btn btn-ghost cursor-pointer px-3.5 py-2">
+            {busy ? "올리는 중..." : value ? "사진 바꾸기" : "사진 올리기"}
+            <input type="file" accept="image/*" className="sr-only" onChange={pick} disabled={busy} />
+          </label>
+          {value && (
+            <button type="button" className="btn btn-ghost px-3.5 py-2" onClick={() => onChange("")}>
+              지우기
+            </button>
+          )}
+        </div>
+      </div>
+      {error && <p className="mt-1.5 text-xs text-red-600" role="alert">{error}</p>}
+    </div>
+  );
+}
+
 function ImageInput({ value, onChange, label }: { value: string; onChange: (v: string) => void; label: string }) {
+  const { busy, error, pick } = useUpload(onChange);
   return (
     <Field label={label}>
       <div className="flex gap-2">
@@ -37,17 +96,8 @@ function ImageInput({ value, onChange, label }: { value: string; onChange: (v: s
           onChange={(e) => onChange(e.target.value)}
         />
         <label className="btn btn-ghost shrink-0 cursor-pointer px-3">
-          올리기
-          <input
-            type="file"
-            accept="image/*"
-            className="sr-only"
-            onChange={async (e) => {
-              const f = e.target.files?.[0];
-              if (f) onChange(await fileToDataUrl(f));
-              e.target.value = "";
-            }}
-          />
+          {busy ? "올리는 중..." : "올리기"}
+          <input type="file" accept="image/*" className="sr-only" onChange={pick} disabled={busy} />
         </label>
         {value && (
           <button type="button" className="btn btn-ghost shrink-0 px-3" onClick={() => onChange("")}>
@@ -55,6 +105,7 @@ function ImageInput({ value, onChange, label }: { value: string; onChange: (v: s
           </button>
         )}
       </div>
+      {error && <span className="text-red-600" role="alert">{error}</span>}
     </Field>
   );
 }
@@ -64,7 +115,7 @@ export function BlockEditor({ block, onChange }: Props) {
     case "profile":
       return (
         <div className="flex flex-col gap-3">
-          <ImageInput label="프로필 사진" value={block.avatar} onChange={(avatar) => onChange({ ...block, avatar })} />
+          <AvatarInput value={block.avatar} name={block.name} onChange={(avatar) => onChange({ ...block, avatar })} />
           <Field label="이름">
             <input className="field" value={block.name} onChange={(e) => onChange({ ...block, name: e.target.value })} />
           </Field>

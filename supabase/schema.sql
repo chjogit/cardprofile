@@ -21,3 +21,19 @@ create policy "내 카드 고치기" on public.profiles
 
 create policy "내 카드 지우기" on public.profiles
   for delete using (auth.uid() = id);
+
+-- 프로필 사진과 이미지 블록을 저장하는 공개 버킷. 각자 자기 폴더(user id)에만 올릴 수 있다.
+insert into storage.buckets (id, name, public)
+values ('images', 'images', true)
+on conflict (id) do nothing;
+
+create policy "이미지 누구나 보기" on storage.objects
+  for select using (bucket_id = 'images');
+
+create policy "내 폴더에 이미지 올리기" on storage.objects
+  for insert to authenticated
+  with check (bucket_id = 'images' and (storage.foldername(name))[1] = auth.uid()::text);
+
+create policy "내 이미지 지우기" on storage.objects
+  for delete to authenticated
+  using (bucket_id = 'images' and (storage.foldername(name))[1] = auth.uid()::text);
