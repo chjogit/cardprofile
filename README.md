@@ -166,16 +166,3 @@
 | 온글잎 박다현체 | 온글잎 / (주)보이저엑스 | 자체 라이선스 (글꼴 파일 수정·배포·판매 금지) | 가능 | [눈누](https://noonnu.cc/font_page/1541) |
 
 이 앱은 글꼴 파일을 고치거나 따로 배포하지 않고, 눈누가 jsDelivr에 올려 둔 웹폰트를 그대로 불러와 화면에 보여줘요. 자체 라이선스 글꼴은 조건이 바뀔 수 있으니 상업적으로 쓰기 전에 배포처 안내를 다시 확인해 주세요.
-
-## 라이선스
-
-아직 저장소에 `LICENSE` 파일이 없어요. 정해지면 이곳과 `LICENSE`에 적을게요.
-
-## 실행하기
-
-```bash
-npm install
-npm run dev   # http://localhost:3000
-```
-
-`.env.local`이 없으면 체험 모드로 실행돼요. Supabase와 Vercel로 배포하는 방법은 [docs/DEPLOY.md](docs/DEPLOY.md), 시연 영상을 다시 만드는 방법은 [video/README.md](video/README.md)에 있어요.
