@@ -7,7 +7,9 @@ import { FontLoader } from "./FontLoader";
 import { SOCIAL_NAMES, SocialIcon } from "./SocialIcon";
 
 export function textCss(s: TextStyle | undefined, defaultSize: number): CSSProperties {
-  return {
+  // 값이 없는 항목은 빼야 한다. undefined가 남으면 { ...buttonCss(), ...textCss() }에서
+  // 버튼 글씨 색을 지워 버려 채우기 버튼의 글씨가 배경과 같은 색이 된다.
+  const css: CSSProperties = {
     fontFamily: fontStack(s?.font),
     fontSize: s?.size ?? defaultSize,
     color: s?.color,
@@ -17,6 +19,7 @@ export function textCss(s: TextStyle | undefined, defaultSize: number): CSSPrope
     textUnderlineOffset: s?.underline ? "0.2em" : undefined,
     textAlign: s?.align,
   };
+  return Object.fromEntries(Object.entries(css).filter(([, v]) => v !== undefined)) as CSSProperties;
 }
 
 const SHAPE_RADIUS: Record<IconShape | "pill", string> = {

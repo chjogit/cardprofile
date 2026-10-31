@@ -1,0 +1,24 @@
+{
+  "name": "cardprofile-video",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "capture": "node scripts/capture.mjs",
+    "studio": "remotion studio",
+    "render": "remotion render Demo out/demo.mp4 --browser-executable=${REMOTION_CHROME:-/opt/pw-browsers/chromium}",
+    "still": "remotion still Demo ../docs/cover.png --frame=650 --browser-executable=${REMOTION_CHROME:-/opt/pw-browsers/chromium}",
+    "gif": "sh scripts/make-gif.sh"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.535",
+    "@remotion/google-fonts": "^4.0.535",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.535"
+  },
+  "devDependencies": {
+    "@types/react": "^19",
+    "playwright": "1.63.0",
+    "typescript": "^5"
+  }
+}
