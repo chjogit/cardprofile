@@ -1,4 +1,5 @@
 import { DEFAULT_FONT } from "./fonts";
+import { isHexColor, stripBadColors } from "./safe";
 import type { Card, Design } from "./types";
 
 export type Preset = { id: string; name: string; design: Design };
@@ -140,6 +141,7 @@ export function normalizeCard(raw: unknown): Card {
   };
   const presetId = c.preset ?? c.themeId ?? "paper";
   const design: Design = { ...getPreset(presetId).design, ...(c.design ?? {}) };
+  if (design.bgType !== "solid" && design.bgType !== "gradient") design.bgType = "solid";
   if (!c.design) {
     if (c.accent) design.accent = c.accent;
     if (c.background?.startsWith("#")) {
@@ -148,7 +150,16 @@ export function normalizeCard(raw: unknown): Card {
     }
     if (c.font) design.font = OLD_FONTS[c.font] ?? DEFAULT_FONT;
   }
-  const blocks = (c.blocks ?? []).map((b) =>
+  // 저장된 값이 이상해도 화면이 깨지거나 외부 주소로 요청이 나가지 않게 색상·숫자를 걸러 낸다.
+  const fallback = getPreset(presetId).design as Record<string, unknown>;
+  const d = design as Record<string, unknown>;
+  for (const k of ["bg1", "bg2", "cardBg", "cardBorder", "text", "muted", "accent", "onAccent"]) {
+    if (!isHexColor(d[k])) d[k] = fallback[k];
+  }
+  for (const k of ["bgAngle", "cardOpacity", "borderWidth", "radius"]) {
+    if (typeof d[k] !== "number" || !Number.isFinite(d[k])) d[k] = fallback[k];
+  }
+  const blocks = (Array.isArray(c.blocks) ? c.blocks : []).map(stripBadColors).map((b) =>
     b.type === "socials"
       ? {
           ...b,

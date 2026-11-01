@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { DEFAULT_FONT, fontStack } from "@/lib/fonts";
+import { safeImageSrc } from "@/lib/safe";
 import { normalizeUrl, socialUrl } from "@/lib/social";
 import { backgroundCss, hexToRgba } from "@/lib/themes";
 import type { Block, ButtonStyle, Card, Design, IconShape, TextStyle } from "@/lib/types";
@@ -45,12 +46,13 @@ function BlockView({ block, design }: { block: Block; design: Design }) {
     case "profile": {
       const size = block.avatarSize ?? 96;
       const radius = SHAPE_RADIUS[block.avatarShape ?? "circle"];
+      const avatar = safeImageSrc(block.avatar);
       return (
         <div className="flex flex-col items-center gap-3 pt-2 text-center">
-          {block.avatar ? (
+          {avatar ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={block.avatar}
+              src={avatar}
               alt=""
               className="object-cover"
               style={{ width: size, height: size, borderRadius: radius }}
@@ -137,10 +139,11 @@ function BlockView({ block, design }: { block: Block; design: Design }) {
         </div>
       );
     }
-    case "image":
-      return block.src ? (
+    case "image": {
+      const src = safeImageSrc(block.src);
+      return src ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={block.src} alt={block.alt} className="w-full object-cover" style={{ borderRadius: block.radius ?? 12 }} />
+        <img src={src} alt={block.alt} className="w-full object-cover" style={{ borderRadius: block.radius ?? 12 }} />
       ) : (
         <div
           className="grid aspect-video w-full place-items-center text-sm"
@@ -149,6 +152,7 @@ function BlockView({ block, design }: { block: Block; design: Design }) {
           이미지를 추가해주세요
         </div>
       );
+    }
     case "divider":
       return <hr className="h-px border-0" style={{ background: block.color ?? hexToRgba(design.text, 15) }} />;
   }
