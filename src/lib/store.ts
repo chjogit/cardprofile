@@ -158,8 +158,10 @@ export async function saveProfile(p: Omit<Profile, "updatedAt">): Promise<Profil
       .single();
     if (error) {
       if (error.code === "23505") throw new Error("이미 누군가 쓰고 있는 주소예요.");
+      if (error.code === "23514") throw new Error("카드가 너무 크거나 쓸 수 없는 주소예요.");
       throw new Error(error.message);
     }
+    await removeUnusedImages(p.id, p.card);
     return fromRow(data as ProfileRow);
   }
   const db = readDemo();
@@ -183,6 +185,49 @@ export async function uploadImage(file: File, maxSize = 1280): Promise<string> {
   const { error } = await sb.storage.from("images").upload(path, blob, { contentType: "image/jpeg" });
   if (error) throw new Error(`이미지를 올리지 못했어요: ${error.message}`);
   return sb.storage.from("images").getPublicUrl(path).data.publicUrl;
+}
+
+/**
+ * 카드에서 더 이상 쓰지 않는 내 이미지를 Storage에서 지운다.
+ * 방금 올려서 아직 저장 전일 수 있는 파일(10분 이내)은 건드리지 않는다. 실패해도 저장은 그대로 성공시킨다.
+ */
+async function removeUnusedImages(userId: string, card: Card) {
+  const sb = getSupabase();
+  if (!sb) return;
+  try {
+    const bucket = sb.storage.from("images");
+    const { data: files } = await bucket.list(userId, { limit: 1000 });
+    if (!files) return;
+    const used = JSON.stringify(card);
+    const cutoff = Date.now() - 10 * 60 * 1000;
+    const stale = files
+      .filter((f) => !used.includes(f.name) && f.created_at && new Date(f.created_at).getTime() < cutoff)
+      .map((f) => `${userId}/${f.name}`);
+    if (stale.length) await bucket.remove(stale);
+  } catch {}
+}
+
+/** 계정 삭제: 내 이미지 파일 → 카드·계정 순으로 모두 지운다. */
+export async function deleteAccount(userId: string) {
+  const sb = getSupabase();
+  if (sb) {
+    const bucket = sb.storage.from("images");
+    const { data: files, error: listError } = await bucket.list(userId, { limit: 1000 });
+    if (listError) throw new Error(listError.message);
+    if (files?.length) {
+      const { error } = await bucket.remove(files.map((f) => `${userId}/${f.name}`));
+      if (error) throw new Error(error.message);
+    }
+    const { error } = await sb.rpc("delete_my_account");
+    if (error) throw new Error(error.message);
+    await sb.auth.signOut();
+    return;
+  }
+  const db = readDemo();
+  db.users = db.users.filter((u) => u.id !== userId);
+  db.profiles = db.profiles.filter((p) => p.id !== userId);
+  db.session = null;
+  writeDemo(db);
 }
 
 // 데모 모드에서 공개 페이지가 쓰는 조회. Supabase 모드에서는 서버에서 조회한다.

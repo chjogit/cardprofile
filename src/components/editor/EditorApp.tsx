@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { CardView } from "@/components/CardView";
 import { DemoNotice } from "@/components/DemoNotice";
 import { RESERVED_USERNAMES, USERNAME_RE, defaultCard } from "@/lib/defaults";
-import { getMyProfile, getUser, isUsernameTaken, saveProfile, signOut, type User } from "@/lib/store";
+import { deleteAccount, getMyProfile, getUser, isUsernameTaken, saveProfile, signOut, type User } from "@/lib/store";
 import type { Card } from "@/lib/types";
 import { BlockList } from "./BlockList";
 import { DesignPanel } from "./DesignPanel";
@@ -19,7 +19,7 @@ export function EditorApp() {
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState("");
   const [card, setCard] = useState<Card>(() => defaultCard());
-  const [published, setPublished] = useState(true);
+  const [published, setPublished] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
@@ -87,9 +87,11 @@ export function EditorApp() {
         userId={user.id}
         onDone={async (name) => {
           const c = defaultCard();
-          await saveProfile({ id: user.id, username: name, card: c, published: true });
+          // 처음에는 비공개로 시작한다. 내용을 채운 뒤 사용자가 직접 "공개"를 켠다.
+          await saveProfile({ id: user.id, username: name, card: c, published: false });
           setUsername(name);
           setCard(c);
+          setPublished(false);
           setStatus("ready");
         }}
       />
@@ -133,6 +135,21 @@ export function EditorApp() {
             }}
           >
             로그아웃
+          </button>
+          <button
+            className="btn btn-ghost hidden text-red-600 sm:inline-flex"
+            onClick={async () => {
+              if (!user) return;
+              if (!confirm("계정을 삭제하면 카드와 올린 이미지가 모두 지워지고 되돌릴 수 없어요. 삭제할까요?")) return;
+              try {
+                await deleteAccount(user.id);
+                router.push("/");
+              } catch (e) {
+                setMessage((e as Error).message);
+              }
+            }}
+          >
+            계정 삭제
           </button>
         </div>
       </header>

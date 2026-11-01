@@ -52,6 +52,11 @@ export const RESERVED_USERNAMES = new Set([
   "settings",
   "_next",
   "favicon.ico",
+  "support",
+  "official",
+  "cardprofile",
+  "www",
+  "root",
 ]);
 
 export const USERNAME_RE = /^[a-z0-9][a-z0-9_-]{2,19}$/;
