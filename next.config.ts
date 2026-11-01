@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const supabaseOrigin = process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).origin : "";
 
-// CSP는 먼저 Report-Only로 둔다. 브라우저 콘솔에 막힐 곳이 없는지 확인한 뒤 정식 헤더로 바꾼다.
+// CSP: 허용한 출처 밖의 스크립트·이미지·연결은 브라우저가 막는다.
 const csp = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline'",
@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
-          { key: "Content-Security-Policy-Report-Only", value: csp },
+          { key: "Content-Security-Policy", value: csp },
         ],
       },
     ];
