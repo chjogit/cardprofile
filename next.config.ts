@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
     ];
   },
   /* config options here */
-  // Workers 런타임의 setTimeout 때문에 Cache Components가 요청을 멈추게 한다(Vercel에서 쓸 때는 다시 켤 수 있다).
+  // Workers 런타임의 setTimeout 때문에 Cache Components가 요청을 멈추게 한다. Cloudflare에서는 꺼야 하고, Vercel에서만 쓴다면 켤 수 있다(이 파일을 함께 쓰므로 켜면 Cloudflare 배포가 깨진다).
   cacheComponents: false,
   partialPrefetching: false,
   turbopack: {
