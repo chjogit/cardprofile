@@ -31,8 +31,9 @@ const nextConfig: NextConfig = {
     ];
   },
   /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Workers 런타임의 setTimeout 때문에 Cache Components가 요청을 멈추게 한다(Vercel에서 쓸 때는 다시 켤 수 있다).
+  cacheComponents: false,
+  partialPrefetching: false,
   turbopack: {
     rules: {
       "*.css": {
