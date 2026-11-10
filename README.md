@@ -49,7 +49,7 @@
 
 | 라이브러리 | 버전 | 쓰는 곳 | 라이선스 |
 | --- | --- | --- | --- |
-| [Next.js](https://github.com/vercel/next.js) | 16.4.3 | 앱 프레임워크, 페이지와 라우팅 | MIT |
+| [Next.js](https://github.com/vercel/next.js) | 16.4.6 | 앱 프레임워크, 페이지와 라우팅 | MIT |
 | [React](https://github.com/facebook/react) / React DOM | 19.3.0 | 화면 구성 | MIT |
 | [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss) | 4 | 스타일 | MIT |
 | [dnd kit](https://github.com/clauderic/dnd-kit) (`core`, `sortable`, `utilities`) | 6.3 / 10.0 / 3.2 | 블록 드래그 정렬 | MIT |
@@ -68,6 +68,7 @@
 
 ### 서비스
 - [Supabase](https://supabase.com) (데이터베이스·인증·스토리지, 무료 플랜)와 [Vercel](https://vercel.com) (호스팅, Hobby 플랜)을 써요. 라이브러리가 아닌 외부 서비스라 각 서비스 약관을 따라요.
+- [Cloudflare Workers](https://workers.cloudflare.com)에서도 호스팅할 수 있어요. 방법은 [`docs/DEPLOY.md`](docs/DEPLOY.md#cloudflare-workers로-올리기)에 있어요.
 
 ## 글꼴과 라이선스
 

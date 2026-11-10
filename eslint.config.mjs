@@ -14,6 +14,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // 데모 영상(Remotion) 프로젝트는 따로 관리한다
     "video/**",
+    // OpenNext 빌드 산출물
+    ".open-next/**",
   ]),
 ]);
 

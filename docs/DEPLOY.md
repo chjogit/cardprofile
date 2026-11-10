@@ -77,3 +77,29 @@
 1. [Google Cloud Console](https://console.cloud.google.com/apis/credentials)에서 **OAuth 클라이언트 ID**(웹 애플리케이션)를 만들어요.
    - 승인된 리디렉션 URI: Supabase **Authentication > Sign In / Providers > Google** 화면에 나오는 Callback URL (`https://abcd1234.supabase.co/auth/v1/callback`)
 2. 받은 Client ID와 Client Secret을 Supabase Google 설정에 넣고 켜요.
+
+## Cloudflare Workers로 올리기
+
+Vercel 대신(또는 함께) Cloudflare Workers에 올릴 수 있어요. 코드는 그대로이고 설정만 달라요. 유료 플랜($5/월)이면 접속이 많아도 요금 걱정이 적어요.
+
+1. [Cloudflare 대시보드](https://dash.cloudflare.com) > **Compute > Workers & Pages > Create > Import a repository**에서 `chjogit/cardprofile`을 연결해요.
+2. Worker 이름은 `cardprofile` (`wrangler.jsonc`의 `name`과 같아야 해요), 브랜치는 `main`.
+3. 빌드 설정:
+   - Build command: `npx opennextjs-cloudflare build`
+   - Deploy command: `npx wrangler deploy`
+4. **Build variables**(빌드 변수)에 두 값을 넣어요. 런타임 변수가 아니라 **빌드 변수**여야 해요. `NEXT_PUBLIC_*` 값은 빌드할 때 코드에 들어가서, 빌드 변수에 없으면 "체험 모드"로 배포돼요.
+
+   | Key | Value |
+   | --- | --- |
+   | `NEXT_PUBLIC_SUPABASE_URL` | Supabase Project URL |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | anon(publishable) 키 |
+
+5. 배포가 끝나면 `https://cardprofile.<내 서브도메인>.workers.dev`가 생겨요. Supabase **Authentication > URL Configuration**의 **Site URL**과 **Redirect URLs**에 이 주소를 추가해요.
+6. 값을 바꾼 뒤에는 다시 빌드해야 반영돼요(**Deployments > Retry build** 또는 새 커밋).
+
+내 컴퓨터에서 확인하려면 `.env.local`에 값을 넣고 `npm run cf:preview`를 실행해요.
+
+알아두면 좋은 점
+- `next.config.ts`의 `cacheComponents`와 `partialPrefetching`은 꺼 두었어요. 켜면 Workers에서 요청이 멈춰요.
+- `next`는 `^16.4.5` 범위예요. `package-lock.json`이 16.4.6으로 고정하고 있으니 `npm update`로 올릴 때는 Cloudflare 빌드를 다시 확인해요.
+- Vercel 배포는 그대로 둘 수 있어서, 문제가 생기면 Vercel 주소로 돌아갈 수 있어요.
