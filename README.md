@@ -6,7 +6,7 @@
 
 블록을 끌어다 놓고, 색을 고르고, 저장하면 바로 `내주소/아이디` 공개 페이지가 생겨요.
 
-[**cardprofile-xi.vercel.app**](https://cardprofile-xi.vercel.app) 에서 바로 써보세요
+[**cardprofile.i2nu.workers.dev**](https://cardprofile.i2nu.workers.dev) 에서 바로 써보세요
 
 <br />
 
@@ -19,7 +19,7 @@
 ![React](https://img.shields.io/badge/React_19-149eca?logo=react&logoColor=fff)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_4-0b1120?logo=tailwindcss&logoColor=38bdf8)
 ![Supabase](https://img.shields.io/badge/Supabase-1c1c1c?logo=supabase&logoColor=3ecf8e)
-![Vercel](https://img.shields.io/badge/Vercel-000?logo=vercel&logoColor=fff)
+![Cloudflare Workers](https://img.shields.io/badge/Cloudflare_Workers-f38020?logo=cloudflare&logoColor=fff)
 
 </div>
 
@@ -67,8 +67,8 @@
 | [FFmpeg](https://ffmpeg.org/legal.html) | | MP4 → GIF 변환 (설치형 도구) | LGPL 2.1+ / GPL |
 
 ### 서비스
-- [Supabase](https://supabase.com) (데이터베이스·인증·스토리지, 무료 플랜)와 [Vercel](https://vercel.com) (호스팅, Hobby 플랜)을 써요. 라이브러리가 아닌 외부 서비스라 각 서비스 약관을 따라요.
-- [Cloudflare Workers](https://workers.cloudflare.com)에서도 호스팅할 수 있어요. 방법은 [`docs/DEPLOY.md`](docs/DEPLOY.md#cloudflare-workers로-올리기)에 있어요.
+- [Supabase](https://supabase.com) (데이터베이스·인증·스토리지, 무료 플랜)와 [Cloudflare Workers](https://workers.cloudflare.com) (호스팅)를 써요. 라이브러리가 아닌 외부 서비스라 각 서비스 약관을 따라요.
+- Cloudflare Workers에 올리는 방법은 [`docs/DEPLOY.md`](docs/DEPLOY.md#cloudflare-workers로-올리기)에 있어요. 이전에 쓰던 Vercel 배포 방법도 같은 문서에 남아 있어요.
 
 ## 글꼴과 라이선스
 
