@@ -240,7 +240,8 @@ export function getDemoPublicProfile(username: string): Profile | null {
 function translateAuthError(msg: string) {
   if (/invalid login credentials/i.test(msg)) return "이메일 또는 비밀번호가 맞지 않아요.";
   if (/already registered/i.test(msg)) return "이미 가입한 이메일이에요. 로그인해주세요.";
-  if (/at least 6 characters/i.test(msg)) return "비밀번호는 6자 이상이어야 해요.";
+  const min = /at least (\d+) characters/i.exec(msg);
+  if (min) return `비밀번호는 ${min[1]}자 이상이어야 해요.`;
   if (/email not confirmed/i.test(msg)) return "메일함에서 인증 링크를 먼저 눌러주세요.";
   return msg;
 }

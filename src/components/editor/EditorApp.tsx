@@ -2,9 +2,13 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CardView } from "@/components/CardView";
 import { DemoNotice } from "@/components/DemoNotice";
+import { ConfirmDelete } from "@/components/lucian/ConfirmDelete";
+import { CopyLink } from "@/components/lucian/CopyLink";
+import { PublicSwitch } from "@/components/lucian/PublicSwitch";
+import { Toaster, type ToasterHandle } from "@/components/lucian/Toaster";
 import { RESERVED_USERNAMES, USERNAME_RE, defaultCard } from "@/lib/defaults";
 import { deleteAccount, getMyProfile, getUser, isUsernameTaken, saveProfile, signOut, type User } from "@/lib/store";
 import type { Card } from "@/lib/types";
@@ -26,6 +30,8 @@ export function EditorApp() {
   const [tab, setTab] = useState<"blocks" | "design">("blocks");
   const [device, setDevice] = useState<"mobile" | "desktop">("mobile");
   const [mobileView, setMobileView] = useState<"edit" | "preview">("edit");
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const toaster = useRef<ToasterHandle>(null);
 
   useEffect(() => {
     (async () => {
@@ -69,7 +75,11 @@ export function EditorApp() {
       await saveProfile({ id: user.id, username, card, published: nextPublished });
       setPublished(nextPublished);
       setDirty(false);
-      setMessage(nextPublished ? "저장했어요. 공개 페이지에 바로 반영돼요." : "저장했어요. 지금은 비공개예요.");
+      // 성공은 잠깐 떴다 사라지는 알림으로, 실패는 아래 배너로 남겨 둔다
+      toaster.current?.show(
+        nextPublished ? "저장하고 공개했어요" : "저장했어요 (비공개)",
+        nextPublished ? { label: "열기", onClick: () => window.open(`/${username}`, "_blank", "noopener") } : undefined,
+      );
     } catch (e) {
       setMessage((e as Error).message);
     } finally {
@@ -99,6 +109,8 @@ export function EditorApp() {
   }
 
   const publicPath = `/${username}`;
+  const host = typeof window !== "undefined" ? location.host : "";
+  const publicUrl = typeof window !== "undefined" ? `${location.origin}${publicPath}` : publicPath;
 
   return (
     <div className="flex h-dvh flex-col">
@@ -106,24 +118,9 @@ export function EditorApp() {
         <Link href="/" className="font-bold">
           CardProfile
         </Link>
-        <a
-          href={publicPath}
-          target="_blank"
-          className="hidden truncate rounded-full bg-paper px-3 py-1 text-sm text-ink-soft hover:text-ink md:block"
-        >
-          {typeof window !== "undefined" ? location.host : ""}
-          {publicPath}
-        </a>
-        <div className="ml-auto flex items-center gap-2">
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              checked={published}
-              onChange={(e) => save(e.target.checked)}
-              className="h-4 w-4 accent-[var(--cobalt)]"
-            />
-            공개
-          </label>
+        <CopyLink url={publicUrl} host={host} path={publicPath} size="sm" className="hidden w-[300px] md:block" />
+        <div className="ml-auto flex items-center gap-2 sm:gap-3">
+          <PublicSwitch label="공개" checked={published} disabled={saving} onChange={(v) => save(v)} />
           <button className="btn btn-primary" onClick={() => save()} disabled={saving || !dirty}>
             {saving ? "저장 중..." : dirty ? "저장" : "저장됨"}
           </button>
@@ -138,16 +135,7 @@ export function EditorApp() {
           </button>
           <button
             className="btn btn-ghost hidden text-red-600 sm:inline-flex"
-            onClick={async () => {
-              if (!user) return;
-              if (!confirm("계정을 삭제하면 카드와 올린 이미지가 모두 지워지고 되돌릴 수 없어요. 삭제할까요?")) return;
-              try {
-                await deleteAccount(user.id);
-                router.push("/");
-              } catch (e) {
-                setMessage((e as Error).message);
-              }
-            }}
+            onClick={() => setConfirmDelete(true)}
           >
             계정 삭제
           </button>
@@ -155,14 +143,24 @@ export function EditorApp() {
       </header>
 
       {message && (
-        <p role="status" className="border-b border-line bg-cobalt-soft px-4 py-2 text-sm">
-          {message}{" "}
-          {published && !dirty && message.startsWith("저장") && (
-            <a href={publicPath} target="_blank" className="font-semibold text-cobalt underline">
-              공개 페이지 보기
-            </a>
-          )}
+        <p role="alert" className="border-b border-line bg-red-50 px-4 py-2 text-sm text-red-700">
+          {message}
         </p>
+      )}
+
+      <Toaster ref={toaster} />
+      {confirmDelete && user && (
+        <ConfirmDelete
+          title="계정을 삭제할까요?"
+          description="카드와 올린 이미지가 모두 지워지고, 되돌릴 수 없어요."
+          confirmLabel="계정 삭제"
+          onConfirm={() => deleteAccount(user.id)}
+          onClose={({ done, error }) => {
+            setConfirmDelete(false);
+            if (error) setMessage(error.message);
+            if (done) router.push("/");
+          }}
+        />
       )}
 
       {/* 휴대폰에서는 편집과 미리보기를 번갈아 본다 */}
@@ -198,6 +196,7 @@ export function EditorApp() {
             ))}
           </div>
           <div className="px-4 pb-10 pt-2">
+            <CopyLink url={publicUrl} host={host} path={publicPath} className="mb-4 md:hidden" />
             <DemoNotice className="mb-4" />
             {tab === "blocks" ? (
               <BlockList blocks={card.blocks} design={card.design} onChange={(blocks) => update({ ...card, blocks })} />

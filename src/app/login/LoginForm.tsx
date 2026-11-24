@@ -23,8 +23,8 @@ export function LoginForm() {
     e.preventDefault();
     setError("");
     setInfo("");
-    if (password.length < 6) {
-      setError("비밀번호는 6자 이상이어야 해요.");
+    if (isSignup && password.length < 8) {
+      setError("비밀번호는 8자 이상이어야 해요.");
       return;
     }
     setBusy(true);
@@ -89,6 +89,7 @@ export function LoginForm() {
             type="password"
             required
             autoComplete={isSignup ? "new-password" : "current-password"}
+            minLength={isSignup ? 8 : undefined}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
