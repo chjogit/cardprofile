@@ -160,6 +160,8 @@
   font-size: 14.5px;
   white-space: nowrap;
   color: var(--ux-ink);
+  /* 주소엔 아래로 내려가는 글자가 거의 없어 글자 덩어리가 위로 떠 보인다. 눈으로 보는 가운데에 맞춰 살짝 내린다. */
+  top: 0.15em;
 }
 .u008-code b {
   font-weight: 500;
