@@ -68,7 +68,9 @@ export function LoginForm() {
         </Link>
         <h1 className="mt-8 text-3xl font-bold">{isSignup ? "가입하고 카드 만들기" : "다시 오셨네요"}</h1>
         <p className="mt-2 text-ink-soft">
-          Google 계정으로 바로 시작해요. 처음이면 자동으로 가입돼요.
+          Google 계정으로 바로 시작해요.
+          <br />
+          처음이면 자동으로 가입돼요.
         </p>
         <button
           type="button"
